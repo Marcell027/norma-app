@@ -4,7 +4,15 @@ import { useState } from "react";
 import { FileText, ClipboardList, Package, DollarSign, Calendar as CalendarIcon, Users, Plus, Trash2, Download, Truck, CreditCard, ChevronLeft, ChevronRight, Minus } from "lucide-react";
 import jsPDF from "jspdf";
 
-const CARDAPIO_INICIAL = [
+interface SalgadoItem {
+  id: number;
+  nome: string;
+  valorAssadoFrito: number;
+  valorCongelado: number;
+  tipoPreparo: "frito" | "assado" | "unidade";
+}
+
+const CARDAPIO_INICIAL: SalgadoItem[] = [
   { id: 1, nome: "Azeitona empanada de calabresa", valorAssadoFrito: 95.00, valorCongelado: 83.00, tipoPreparo: "frito" },
   { id: 2, nome: "Azeitona empanada de presunto", valorAssadoFrito: 95.00, valorCongelado: 83.00, tipoPreparo: "frito" },
   { id: 3, nome: "Bolinha de queijo prato", valorAssadoFrito: 95.00, valorCongelado: 83.00, tipoPreparo: "frito" },
@@ -48,18 +56,51 @@ const CARDAPIO_INICIAL = [
   { id: 41, nome: "Risole de milho", valorAssadoFrito: 85.00, valorCongelado: 73.00, tipoPreparo: "frito" }
 ];
 
-export default function NormaApp() {
-  const [abaAtiva, setAbaAtiva] = useState("orcamentos");
-  const [cardapio, setCardapio] = useState(CARDAPIO_INICIAL);
+interface PedidoItem {
+  id: number;
+  nomeCompleto: string;
+  quantidade: number;
+  valorUnitario: number;
+}
 
-  const [novoSalNome, setNovoSalNome] = useState("");
-  const [novoSalVlrFrito, setNovoSalVlrFrito] = useState(95);
-  const [novoSalVlrCong, setNovoSalVlrCong] = useState(83);
+interface PedidoCadastrado {
+  id: number;
+  cliente: string;
+  telefone: string;
+  dataEntrega: string;
+  horario: string;
+  total: number;
+  status: string;
+  pagamento: string;
+  itens: string;
+}
+
+interface EventoCalendario {
+  id: number;
+  data: string;
+  titulo: string;
+  horario: string;
+}
+
+interface ClienteCadastrado {
+  id: number;
+  nome: string;
+  telefone: string;
+  endereco: string;
+}
+
+export default function NormaApp() {
+  const [abaAtiva, setAbaAtiva] = useState<string>("orcamentos");
+  const [cardapio, setCardapio] = useState<SalgadoItem[]>(CARDAPIO_INICIAL);
+
+  const [novoSalNome, setNovoSalNome] = useState<string>("");
+  const [novoSalVlrFrito, setNovoSalVlrFrito] = useState<number>(95);
+  const [novoSalVlrCong, setNovoSalVlrCong] = useState<number>(83);
   const [novoSalTipo, setNovoSalTipo] = useState<"frito" | "assado" | "unidade">("frito");
 
   const adicionarNovoSalgado = () => {
     if (!novoSalNome) return;
-    const novoItem = {
+    const novoItem: SalgadoItem = {
       id: Date.now(),
       nome: novoSalNome,
       valorAssadoFrito: Number(novoSalVlrFrito) || 95,
@@ -72,30 +113,30 @@ export default function NormaApp() {
     alert("Novo salgado cadastrado com sucesso!");
   };
 
-  const [cliente, setCliente] = useState("Antonio");
-  const [telefoneCliente, setTelefoneCliente] = useState("(31) 99202-3753");
-  const [dataEntrega, setDataEntrega] = useState("2026-10-10");
-  const [horarioEntrega, setHorarioEntrega] = useState("08:00");
-  const [numeroOrcamento, setNumeroOrcamento] = useState("43");
-  const [dataLimite, setDataLimite] = useState("2026-10-09");
+  const [cliente, setCliente] = useState<string>("Antonio");
+  const [telefoneCliente, setTelefoneCliente] = useState<string>("(31) 99202-3753");
+  const [dataEntrega, setDataEntrega] = useState<string>("2026-10-10");
+  const [horarioEntrega, setHorarioEntrega] = useState<string>("08:00");
+  const [numeroOrcamento, setNumeroOrcamento] = useState<string>("43");
+  const [dataLimite, setDataLimite] = useState<string>("2026-10-09");
 
-  const [produtoSelecionado, setProdutoSelecionado] = useState("");
+  const [produtoSelecionado, setProdutoSelecionado] = useState<string>("");
   const [modoPreparo, setModoPreparo] = useState<"assado_frito" | "congelado">("assado_frito");
-  const [quantidadeDigitada, setQuantidadeDigitada] = useState(25);
+  const [quantidadeDigitada, setQuantidadeDigitada] = useState<number>(25);
 
-  const [itensPedido, setItensPedido] = useState<{ id: number; nomeCompleto: string; quantidade: number; valorUnitario: number }[]>([
+  const [itensPedido, setItensPedido] = useState<PedidoItem[]>([
     { id: 1, nomeCompleto: "Quiche de frango (assado)", quantidade: 25, valorUnitario: 0.95 },
     { id: 2, nomeCompleto: "Esfirra de carne (assado)", quantidade: 25, valorUnitario: 0.90 },
-    { id: 3, nome: "Kibe (frito)", quantidade: 25, valorUnitario: 0.85 },
+    { id: 3, nomeCompleto: "Kibe (frito)", quantidade: 25, valorUnitario: 0.85 },
     { id: 4, nome: "Delícia de muçarela c/ presunto (frito)", quantidade: 19, valorUnitario: 0.85 },
     { id: 5, nome: "Coxinha de frango (frito)", quantidade: 30, valorUnitario: 0.85 }
   ]);
 
-  const [formaEntrega, setFormaEntrega] = useState("Retirada pelo Cliente");
-  const [taxaEntrega, setTaxaEntrega] = useState(0);
-  const [condicaoPagamento, setCondicaoPagamento] = useState("50% no fechamento do pedido e o restante na entrega.");
+  const [formaEntrega, setFormaEntrega] = useState<string>("Retirada pelo Cliente");
+  const [taxaEntrega, setTaxaEntrega] = useState<number>(0);
+  const [condicaoPagamento, setCondicaoPagamento] = useState<string>("50% no fechamento do pedido e o restante na entrega.");
 
-  const [pedidos, setPedidos] = useState([
+  const [pedidos, setPedidos] = useState<PedidoCadastrado[]>([
     {
       id: 43,
       cliente: "Antonio",
@@ -126,15 +167,15 @@ export default function NormaApp() {
     setEstoqueUnidades({ ...estoqueUnidades, [nome]: Math.max(0, qtd) });
   };
 
-  const [mesAtual, setMesAtual] = useState(9);
-  const [anoAtual, setAnoAtual] = useState(2026);
+  const [mesAtual, setMesAtual] = useState<number>(9);
+  const [anoAtual, setAnoAtual] = useState<number>(2026);
 
-  const [eventosCalendario, setEventosCalendario] = useState<{ id: number; data: string; titulo: string; horario: string }[]>([
+  const [eventosCalendario, setEventosCalendario] = useState<EventoCalendario[]>([
     { id: 1, data: "2026-10-10", titulo: "Pedido #43 Antonio", horario: "08:00" }
   ]);
-  const [novoEvData, setNovoEvData] = useState("2026-10-15");
-  const [novoEvTitulo, setNovoEvTitulo] = useState("");
-  const [novoEvHorario, setNovoEvHorario] = useState("10:00");
+  const [novoEvData, setNovoEvData] = useState<string>("2026-10-15");
+  const [novoEvTitulo, setNovoEvTitulo] = useState<string>("");
+  const [novoEvHorario, setNovoEvHorario] = useState<string>("10:00");
 
   const adicionarEventoCalendario = () => {
     if (!novoEvTitulo || !novoEvData) return;
@@ -147,13 +188,13 @@ export default function NormaApp() {
     setEventosCalendario(eventosCalendario.filter(ev => ev.id !== id));
   };
 
-  const [clientesLista, setClientesLista] = useState([
+  const [clientesLista, setClientesLista] = useState<ClienteCadastrado[]>([
     { id: 1, nome: "Antonio", telefone: "(31) 99202-3753", endereco: "Rua Engenheiro Carlos Goulart, 1000 - Buritis" },
     { id: 2, nome: "Marcell Pessoa", telefone: "(31) 99235-3710", endereco: "Av. Professor Mário Werneck, 500 - Buritis" }
   ]);
-  const [novoClienteNome, setNovoClienteNome] = useState("");
-  const [novoClienteTel, setNovoClienteTel] = useState("");
-  const [novoClienteEnd, setNovoClienteEnd] = useState("");
+  const [novoClienteNome, setNovoClienteNome] = useState<string>("");
+  const [novoClienteTel, setNovoClienteTel] = useState<string>("");
+  const [novoClienteEnd, setNovoClienteEnd] = useState<string>("");
 
   const adicionarCliente = () => {
     if (!novoClienteNome) return;
@@ -197,7 +238,7 @@ export default function NormaApp() {
       return;
     }
     const dataIso = dataEntrega || "2026-10-10";
-    const novoPedido = {
+    const novoPedido: PedidoCadastrado = {
       id: Number(numeroOrcamento),
       cliente,
       telefone: telefoneCliente,
@@ -229,33 +270,38 @@ export default function NormaApp() {
     if (!cliente) return;
     const doc = new jsPDF();
 
-    // Cabeçalho moderno com faixa lateral e fundo elegante (#551844)
-    doc.setFillColor(85, 24, 68);
+    // CABEÇALHO PREDOMINANTE AMARELO (#F2AC32)
+    doc.setFillColor(242, 172, 50);
     doc.rect(0, 0, 210, 36, "F");
 
-    // Detalhe moderno em barra laranja (#F2AC32)
-    doc.setFillColor(242, 172, 50);
+    // Linha de acabamento em roxo escuro (#551844) na base do cabeçalho
+    doc.setFillColor(85, 24, 68);
     doc.rect(0, 36, 210, 2, "F");
 
-    // LOGO NO PDF (Badge elegante no canto superior direito do cabeçalho)
-    doc.setFillColor(242, 172, 50);
-    doc.roundedRect(165, 6, 31, 24, 2, 2, "F");
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(11);
-    doc.setTextColor(85, 24, 68);
-    doc.text("NORMA", 172, 17);
-    doc.setFontSize(8);
-    doc.text("SALGADERIA", 168, 23);
+    // LOGO DA EMPRESA (Emblema com a identidade visual da Norma Salgaderia)
+    doc.setFillColor(85, 24, 68);
+    doc.roundedRect(158, 6, 38, 24, 2, 2, "F");
 
-    // Título e Subtítulo no Cabeçalho
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text("NORMA", 177, 15, { align: "center" });
+    doc.setFontSize(7.5);
+    doc.setTextColor(242, 172, 50);
+    doc.text("SALGADERIA", 177, 21, { align: "center" });
+    doc.setFontSize(6);
+    doc.setTextColor(220, 220, 220);
+    doc.text("LOGO.SVG", 177, 25, { align: "center" });
+
+    // Título e Subtítulo no Cabeçalho (Textos em Roxo Escuro para perfeito contraste no fundo amarelo)
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
-    doc.setTextColor(255, 255, 255);
+    doc.setTextColor(85, 24, 68);
     doc.text("NORMA SALGADERIA", 14, 20);
 
-    doc.setFont("helvetica", "normal");
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
-    doc.setTextColor(242, 172, 50);
+    doc.setTextColor(60, 15, 45);
     doc.text("CNPJ: 35.851.474/0001-21  |  Tel: (31) 99202-3753  |  @normasalgaderia", 14, 27.5);
 
     // Título do Orçamento
