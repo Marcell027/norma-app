@@ -846,7 +846,7 @@ export default function NormaApp() {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-3">
               <h3 className="text-lg font-semibold text-[#551844] mb-2">Clientes Cadastrados</h3>
               {clientesLista.map((cli) => (
-                <div key={cli.id} className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex justify-between items-center">
+                <div key={cli.id} className="p-4 bg-gray-500/10 rounded-xl border border-gray-100 flex justify-between items-center">
                   <div>
                     <h4 className="font-bold text-[#551844]">{cli.nome}</h4>
                     <p className="text-xs text-gray-600">Tel: {cli.telefone} | Endereço: {cli.endereco}</p>
