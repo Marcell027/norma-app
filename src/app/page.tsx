@@ -128,8 +128,8 @@ export default function NormaApp() {
     { id: 1, nomeCompleto: "Quiche de frango (assado)", quantidade: 25, valorUnitario: 0.95 },
     { id: 2, nomeCompleto: "Esfirra de carne (assado)", quantidade: 25, valorUnitario: 0.90 },
     { id: 3, nomeCompleto: "Kibe (frito)", quantidade: 25, valorUnitario: 0.85 },
-    { id: 4, nome: "Delícia de muçarela c/ presunto (frito)", quantidade: 19, valorUnitario: 0.85 },
-    { id: 5, nome: "Coxinha de frango (frito)", quantidade: 30, valorUnitario: 0.85 }
+    { id: 4, nomeCompleto: "Delícia de muçarela c/ presunto (frito)", quantidade: 19, valorUnitario: 0.85 },
+    { id: 5, nomeCompleto: "Coxinha de frango (frito)", quantidade: 30, valorUnitario: 0.85 }
   ]);
 
   const [formaEntrega, setFormaEntrega] = useState<string>("Retirada pelo Cliente");
@@ -416,7 +416,6 @@ export default function NormaApp() {
     doc.setTextColor(60, 60, 60);
     y += 5;
 
-    // Verificação inteligente de tipos de salgados no pedido
     const temCongelado = itensPedido.some(i => i.nomeCompleto.toLowerCase().includes("congelado"));
     const temPronto = itensPedido.some(i => i.nomeCompleto.toLowerCase().includes("assado") || i.nomeCompleto.toLowerCase().includes("frito"));
 
